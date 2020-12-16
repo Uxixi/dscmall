@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@3.5.1/dist/vuex.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h2>{{this.$store.state.msg}}</h2>
+        <h2>计算属性值：{{msgFn}}</h2>
+        <button @click="changeMsgFn1">修改msg加加</button>
+        <button @click="changeMsgFnJian">修改msg减减</button>
+        <button @click="changeMsgFn2(5)">修改msg+mun个</button>
+        <button @click="actChangeMsgFn1">提交actions中的方法修改msg</button>
+        <button @click="actChangeMsgFn2(10)">提交actions中的方法修改msg</button>
+    </div>
+    <script>
+
+        // 定义一个store实例对象，这个对象中存放的有
+        // 1、state定义数据
+        // let store = new Vuex.Store()
+        // console.log(store);
+        let store = new Vuex.Store({
+            state: {   //state中定义状态数据
+                msg: 5
+            },
+            mutations: { //定义修改数据的方法，这里面定义的是修改数据的唯一方法
+                changeMsg: function (state) {   //修改msg的方法
+                    state.msg++
+                },
+                changeMsgJian: function (state) {   //修改msg的方法
+                    state.msg-- 
+                },
+                changeMsgData: function (state,data) {   //修改msg的方法
+                    state.msg+=data
+                }
+            },
+            actions:{//actions中定义的方法时用来提交mutations中定义的方法的
+                actChangeMsg(context){
+                    context.commit("changeMsg") //changeMsg是在mutations中定义的方法
+                },
+                actChangeNumMsg(context,data){
+                    context.commit("changeMsgData",data) //changeMsg是在mutations中定义的方法
+                },
+            },
+            getters:{ //派生出来的状态
+                msgGetter(state){
+                    if(state.msg<=9){
+                       return "0" + state.msg;
+                    }else{
+                        return state.msg
+                    }
+                }
+            }
+        })
+
+
+        new Vue({
+            el: "#app",
+            store,  //将vuex实例对象注入到vue实例中
+            methods: {
+                changeMsgFn1() {
+                    // console.log(this);
+                    this.$store.commit("changeMsg")
+                },
+                changeMsgFnJian() {
+                    // console.log(this);
+                    this.$store.commit("changeMsgJian")
+                },
+                changeMsgFn2(data) {
+                    // console.log(this);
+                    this.$store.commit("changeMsgData",data)
+                },
+                actChangeMsgFn1(){
+                    this.$store.dispatch('actChangeMsg')
+                },
+                actChangeMsgFn2(data){
+                    this.$store.dispatch('actChangeNumMsg',data)
+                }
+            },
+            computed:{
+                msgFn(){
+                    return this.$store.getters.msgGetter
+                }
+            },
+            mounted() {
+                // console.log(this.$store.state.msg);
+                console.log(this);
+
+            }
+        })
+    </script>
+</body>
+
+</html>
